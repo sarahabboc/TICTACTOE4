@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIC TAC TOE</title>
+    <style>
+        #board-3x3 {
+            display: flex;
+            flex-wrap: wrap;
+            width: 300px; 
+            margin: 0 auto;
+        }
+        .square {
+            width: 90px;
+            height: 90px; 
+            background-color: violet; 
+            margin: 5px;
+            text-align: center;
+            font-size: 95px;
+            font-weight: bold;
+            line-height: 90px;
+        }
+        .square:hover {
+            background-color: lightpink;
+        }
+        #text-box {
+            text-align: center;
+            border: 2px solid #000;
+            width: 300px;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 25px;
+        }
+        #status-box{
+            text-align: center;
+            border: 2px solid #000;
+            width: 300px;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 25px;
+            
+        }
+        h1 {
+            text-align: center;
+            color: red;
+            font-family: Impact;
+        }
+        #buttonContainer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            margin: 20px auto;
+            font-size: 20px;
+            background-color: #808080;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>TIC TAC TOE</h1>
+    <div id="buttonContainer">
+        <button id="startButton">Start Game</button>
+    </div>
+    
+    <div id="text-box">X's turn!</div>
+   
+    <div id="board-3x3">
+        <script>
+            const NUM_SQUARES = 9;
+            for (let i = 0; i < NUM_SQUARES; i++) {
+                const id = "sq" + i;
+                document.write("<div class='square' id='" + id + "'></div>");
+            }
+        </script>
+    </div>
+     <div id="status-box">Waiting for Winner...</div>
+    <script>
+        // Get all the square elements and text boxes
+        const squares = document.querySelectorAll('.square');
+        const textBox = document.getElementById('text-box'); 
+        const statusBox = document.getElementById('status-box'); 
+        let currentPlayer = true;
+        let gameOn = true; // Game state
+
+        // Function to update the text box based on the current player
+        function updateTextBox() {
+            textBox.textContent = currentPlayer ? "X's turn!" : "O's turn!";
+        }
+
+        // Win conditions based on indices
+        const winConditions = [
+            [0, 1, 2], // Row 1
+            [3, 4, 5], // Row 2
+            [6, 7, 8], // Row 3
+            [0, 3, 6], // Column 1
+            [1, 4, 7], // Column 2
+            [2, 5, 8], // Column 3
+            [0, 4, 8], // Diagonal
+            [2, 4, 6]  // Diagonal
+        ];
+
+        // Function to check for win or stalemate
+        function checkGameStatus() {
+            const moves = Array.from(squares).map(square => square.innerText || '-');
+
+            // Check win conditions
+            for (let condition of winConditions) {
+                const [a, b, c] = condition;
+                if (moves[a] === moves[b] && moves[b] === moves[c] && moves[a] !== '-') {
+                    statusBox.textContent = `${moves[a]} wins!`;
+                    gameOn = false; // End the game
+                    return;
+                }
+            }
+
+            // Check for stalemate
+            if (!moves.includes('-')) {
+                statusBox.textContent = "It's a stalemate!";
+                gameOn = false; // End the game
+            }
+        }
+
+        // Add click event listener to each square
+        squares.forEach((square, index) => {
+            square.addEventListener('click', function() {
+                // Only allow moves if the game is on
+                if (gameOn && this.innerText === '') {
+                    // Place 'X' or 'O' based on the current player
+                    this.innerText = currentPlayer ? 'X' : 'O';
+                    
+                    // Check for game status after the move
+                    checkGameStatus();
+                    
+                    // Switch player if the game is still on
+                    if (gameOn) {
+                        currentPlayer = !currentPlayer;
+                        updateTextBox();
+                    }
+                } else if (!gameOn) {
+                    alert('Game over! Please restart to play again.');
+                } else {
+                    alert('Square already occupied!'); // Prevent clicking on occupied squares
+                }
+            });
+        });
+
+        // Function to reset the game
+        function startGame() {
+            squares.forEach(square => {
+                square.innerText = ""; // Clear the text in each square
+            });
+            currentPlayer = true; // Reset current player
+            gameOn = true; // Reset game state
+            updateTextBox(); // Reset the text box
+            statusBox.textContent = "Waiting for Winner..."; // Reset status box
+        }
+        
+        document.getElementById("startButton").onclick = startGame; 
+
+        // Initialize the game
+        startGame();
+    </script>
+</body>
+</html>
